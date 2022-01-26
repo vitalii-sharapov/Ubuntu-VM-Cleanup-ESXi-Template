@@ -35,6 +35,9 @@ echo -n > /etc/machine-id
 #Cleanup apt
 apt-get clean
 
+#Remove cleanup script
+rm -rf /home/localadmin/ubuntu_vm_cleanup_esxi_template.sh
+
 #Clear the history & shutdown the VM
 history -c
 shutdown -h now
