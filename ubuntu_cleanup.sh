@@ -3,7 +3,7 @@ sudo apt -y update
 sudo apt -y upgrade
 
 #install packages
-apt-get install -y open-vm-tools
+sudo apt-get install -y open-vm-tools
 
 #Clear audit logs
 if [ -f /var/log/audit/audit.log ]; then
@@ -17,27 +17,27 @@ if [ -f /var/log/lastlog ]; then
 fi
 
 #Clear the tmp
-rm -rf /tmp/*
-rm -rf /var/tmp/*
+sudo rm -rf /tmp/*
+sudo rm -rf /var/tmp/*
 
 #Clear the SSH
-rm -f /etc/ssh/ssh_host_*
+sudo rm -f /etc/ssh/ssh_host_*
 
 #Reset the hostname
-cat /dev/null > /etc/hostname
+sudo cat /dev/null > /etc/hostname
 
 #Remove the default *.yaml file from the /etc/netplan. The VMware customizaion will create it’s own file 99-netcfg-vmware.yaml.
-rm -f /etc/netplan/*.yaml
+sudo rm -f /etc/netplan/*.yaml
 
 #Reset the machine id
-echo -n > /etc/machine-id
+sudo echo -n > /etc/machine-id
 
 #Cleanup apt
-apt-get clean
+sudo apt-get clean
 
 #Remove cleanup script
-rm -rf /home/localadmin/ubuntu_cleanup.sh
+sudo rm -rf /home/localadmin/ubuntu_cleanup.sh
 
 #Clear the history & shutdown the VM
-history -c
-shutdown -h now
+sudo history -c
+sudo shutdown -h now
