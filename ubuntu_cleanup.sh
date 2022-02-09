@@ -1,8 +1,8 @@
-#Update the OS
-sudo apt -y update
-sudo apt -y upgrade
+#Apply any system updates & remove any obsolete packages
+sudo apt update && sudo apt upgrade -y
+sudo apt clean && sudo apt -y autoremove --purge
 
-#install packages
+#Install packages
 sudo apt-get install -y open-vm-tools
 
 #Clear audit logs
@@ -34,6 +34,28 @@ sudo echo -n > /etc/machine-id
 
 #Cleanup apt
 sudo apt-get clean
+
+#Setup script to generate new ssh keys at boot
+cat << 'EOL' | sudo tee /etc/rc.local
+#!/bin/sh -e
+#
+# rc.local
+#
+test -f /etc/ssh/ssh_host_dsa_key || dpkg-reconfigure openssh-server
+exit 0
+EOL
+
+#Make sure the script is executable
+sudo chmod +x /etc/rc.local
+
+#Prevent ctrl-alt-del from causing a reboot
+sudo systemctl mask ctrl-alt-del.target
+
+#Disable LTS Upgrade MOTD
+sudo sed -i '16 s/.*Prompt.*/Prompt=never/' /etc/update-manager/release-upgrades
+
+#Remove some of the initial setup packages
+sudo apt remove --purge gnome-initial-setup gnome-online-accounts update-manager-core -y
 
 #Remove cleanup script
 sudo rm -rf /home/localadmin/ubuntu_cleanup.sh
