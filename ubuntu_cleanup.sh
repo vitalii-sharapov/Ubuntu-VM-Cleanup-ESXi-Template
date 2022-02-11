@@ -16,10 +16,6 @@ if [ -f /var/log/lastlog ]; then
     cat /dev/null > /var/log/lastlog
 fi
 
-#Clear the tmp
-sudo rm -rf /tmp/*
-sudo rm -rf /var/tmp/*
-
 #Clear the SSH
 sudo rm -f /etc/ssh/ssh_host_*
 
@@ -45,6 +41,10 @@ EOL
 #Make sure the script is executable
 sudo chmod +x /etc/rc.local
 
+#Disable swap for K8s
+sudo swapoff --all
+sudo sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
+
 #Prevent ctrl-alt-del from causing a reboot
 sudo systemctl mask ctrl-alt-del.target
 
@@ -61,9 +61,17 @@ sudo rm -rf /etc/netplan/*.yaml
 sudo apt purge cloud-init -y
 sudo apt autoremove -y
 
+#Don't clear /tmp
+sudo sed -i 's/D \/tmp 1777 root root -/#D \/tmp 1777 root root -/g' /usr/lib/tmpfiles.d/tmp.conf
+
+#Remove cloud-init and rely on dbus for open-vm-tools
+sudo sed -i 's/Before=cloud-init-local.service/After=dbus.service/g' /lib/systemd/system/open-vm-tools.service
+
+
 #Remove cleanup script
 sudo rm -rf /home/localadmin/ubuntu_cleanup.sh
 
 #Clear the history & shutdown the VM
 sudo history -c
+sudo history -w
 sudo shutdown -h now
