@@ -26,9 +26,6 @@ sudo rm -f /etc/ssh/ssh_host_*
 #Reset the hostname
 sudo cat /dev/null > /etc/hostname
 
-#Remove the default *.yaml file from the /etc/netplan. The VMware customizaion will create it’s own file 99-netcfg-vmware.yaml.
-sudo rm -f /etc/netplan/*.yaml
-
 #Reset the machine id
 sudo echo -n > /etc/machine-id
 
@@ -56,6 +53,13 @@ sudo sed -i '16 s/.*Prompt.*/Prompt=never/' /etc/update-manager/release-upgrades
 
 #Remove some of the initial setup packages
 sudo apt remove --purge gnome-initial-setup gnome-online-accounts update-manager-core -y
+
+#Disable cloud-init and instead rely on VMware Guest Customisation specs 
+sudo cloud-init clean --logs
+sudo touch /etc/cloud/cloud-init.disabled
+sudo rm -rf /etc/netplan/*.yaml
+sudo apt purge cloud-init -y
+sudo apt autoremove -y
 
 #Remove cleanup script
 sudo rm -rf /home/localadmin/ubuntu_cleanup.sh
